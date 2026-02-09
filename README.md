@@ -1,6 +1,4 @@
 # MarketPlace-ECommerce
-# FinalProject iOS App
-
 A UIKit e-commerce application built with a modular architecture (`Coordinator + MVVM + Builder`) and a Firebase-backed data layer.
 
 ## Overview
