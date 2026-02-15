@@ -1,158 +1,155 @@
 # MarketPlace-ECommerce
-A UIKit e-commerce application built with a modular architecture (`Coordinator + MVVM + Builder`) and a Firebase-backed data layer.
 
-## Overview
+Monorepo for a Firebase-backed commerce system with:
 
-This project delivers a full shopping flow:
+- customer iOS app (`FinalProject`)
+- admin iOS dashboard app (`DashBoardFinalProject`)
+- two web dashboard prototypes (`dashboard.html` variants)
 
-- authentication (email/password, Google, Apple)
-- product discovery and search
-- filtering and category browsing
-- product details with variant selection and reviews
-- cart, checkout, shipping, and payment management
-- order history and order details
-- notifications
-- wishlist
-- profile and settings
-- help center and real-time support chat
+## Repository Analysis Snapshot (February 15, 2026)
 
-Current codebase size:
+- 2 Xcode projects, 3 targets, 2 runnable iOS schemes
+- 221 Swift files total
+- `FinalProject`: 162 Swift files, 22 screen modules, 17 service implementations
+- `DashBoardFinalProject`: 58 Swift files + 1 test file
+- Shared backend contract: Firestore + Realtime Database
 
-- `160` Swift files
-- `22` screen modules
-- `17` service implementations
+## What Is In This Repository
 
-## Architecture
+| Path | Deliverable | Stack | Purpose |
+| --- | --- | --- | --- |
+| `FinalProject/` | Customer app | UIKit, Coordinator + MVVM + Builder, Combine, SnapKit, Firebase | End-user shopping flow |
+| `DashBoardFinalProject/` | Admin dashboard app | SwiftUI, ViewModel + Repository, Combine, Firebase | Catalog/order/chat operations for admins |
+| `DashBoardFinalProject/dashboard.html` | Web dashboard prototype (v1) | Vanilla HTML/CSS/JS + Firebase Web SDK | Browser-based admin prototype |
+| `WebsiteDashBoardFinalProject/dashboard.html` | Web dashboard prototype (v2) | Vanilla HTML/CSS/JS + Firebase Web SDK | Extended prototype (adds mirrored order updates + notification write) |
 
-### 1. Coordinator layer
+## Feature Coverage
 
-Navigation is centralized in coordinators:
+### Customer iOS app (`FinalProject`)
 
-- `AppCoordinator` decides auth flow vs main flow
-- `AuthCoordinator` handles login/register routing
-- `MainTabCoordinator` handles tab-based app routing and deep screen flows
+- email/password + Google + Apple authentication
+- home feed, browse, search, filtering
+- product details with variants and reviews
+- cart, checkout, pricing summary, order placement
+- payment method and shipping address management
+- order history, order details, order success flow
+- notifications, wishlist, profile/settings
+- help center + real-time support chat
 
-Routes are modeled as enums (`HomeRoute`, `CheckoutRoute`, etc.), which keeps navigation explicit and maintainable.
+### Admin iOS app (`DashBoardFinalProject`)
 
-### 2. Builder layer
+- create categories and products
+- attach product variants and reviews during product creation
+- inspect orders and update status (`on_delivery` / `delivered`)
+- view conversations and respond in real time from admin chat
 
-Each screen has a `Builder` that wires `VC + VM + dependencies` from `ServiceContainer`.
+### Web prototypes
 
-### 3. MVVM presentation layer
+- manage catalog, orders, and chat in browser
+- both prototypes target the same Firebase project shape
+- `WebsiteDashBoardFinalProject/dashboard.html` includes extra writebacks on delivery state change
 
-ViewModels manage screen state and business interactions:
+## Architecture Summary
 
-- `@Published` state for UI updates
-- `async/await` for async work
-- `Task` + `@MainActor` for thread-safe UI state updates
+### `FinalProject` (customer app)
 
-### 4. Service layer
+- app bootstrap: `AppDelegate` configures Firebase, `SceneDelegate` starts `AppCoordinator`
+- navigation: `AppCoordinator` -> `AuthCoordinator` or `MainTabCoordinator`
+- route modeling: route enums per domain (`HomeRoute`, `CheckoutRoute`, `ProfileRoute`, etc.)
+- presentation: MVVM with builder-based module assembly
+- data layer: protocol-first services via `ServiceContainer`
 
-Firebase access is encapsulated behind protocols and concrete services:
+Primary frameworks used in source:
 
-- `AuthenticationServiceProtocol` / `FirebaseAuthService`
-- `FirestoreServiceProtocol` / `FirestoreService`
-- `CartService`, `WishlistService`, `OrdersService`, `PaymentsService`
-- `ShippingAddressService`, `NotificationsService`, `ReviewService`
-- `UserService`, `StorageService`, `ChatService`, etc.
+- `UIKit`, `Combine`, `SnapKit`
+- `FirebaseCore`, `FirebaseAuth`, `FirebaseFirestore`, `FirebaseStorage`, `FirebaseDatabase`
+- `GoogleSignIn`, `Kingfisher`
 
-`ServiceContainer` is the project-wide dependency provider.
+### `DashBoardFinalProject` (admin app)
 
-### 5. UI layer
+- app bootstrap: SwiftUI app with `@UIApplicationDelegateAdaptor`, Firebase configured in app delegate
+- composition root: `DashboardBuilder` + `ServiceContainer`
+- root state owner: `ContentView` holds `CatalogViewModel`, `OrdersViewModel`, `MessagesViewModel`
+- data layer: repository interfaces + Firestore/Realtime implementations
 
-- UIKit programmatic UI
-- reusable UI components under `UIComponents/`
-- layout with SnapKit (`snp.makeConstraints`)
-- compositional layouts for Home and Help Center sections
+Primary frameworks used in source:
 
-## Tech Stack
+- `SwiftUI`, `Combine`
+- `FirebaseCore`, `FirebaseFirestore`, `FirebaseDatabase`
 
-- Swift 5
-- UIKit
-- Combine
-- SnapKit
-- Firebase (Auth, Firestore, Storage, Realtime Database, Core)
-- GoogleSignIn
-- Kingfisher
+## Firebase Data Contract
 
-## Project Structure
-
-```text
-FinalProject/
-├── AppDelegate.swift
-├── SceneDelegate.swift
-├── Coordinators/
-├── Models/
-├── Services/
-├── Screens/
-├── UIComponents/
-├── Extensions/
-├── Assets.xcassets/
-└── GoogleService-Info.plist
-```
-
-## Main Features by Module
-
-- `HomeScreen`: featured carousel, categories, new arrivals, notification badge
-- `BrowseScreen` + `CategoryDetailScreen`: category-first discovery
-- `SearchResultScreen` + `FilterScreen`: search + sort/filter pipelines
-- `ProductDetailsScreen`: variants, quantity, add-to-cart, wishlist, reviews
-- `CartScreen` + `CheckoutScreen`: pricing summary, delivery options, order placement
-- `PaymentsScreen` + `ShippingAddressScreen`: CRUD + default selection
-- `MyOrderScreen` + `OrderDetailScreen` + `OrderSuccessScreen`: order lifecycle
-- `NotificationsScreen`: read/unread state and detail pages
-- `ProfileScreen` + `SettingsScreen`: profile data, avatar updates, password changes
-- `HelpCenterScreen` + `MessageScreen`: FAQs + real-time support chat
-
-## Getting Started
-
-### Prerequisites
-
-- macOS
-- Xcode (with iOS 16.6+ deployment support)
-
-### Run
-
-1. Clone the repository.
-2. Open `FinalProject.xcodeproj` in Xcode.
-3. Let Swift Package Manager resolve dependencies.
-4. Select scheme `FinalProject`.
-5. Build and run on a simulator/device.
-
-## Firebase Setup Notes
-
-If you run this app on your own Firebase project:
-
-1. Create an iOS app in Firebase Console.
-2. Replace `FinalProject/GoogleService-Info.plist` with your own config.
-3. Update URL scheme in `FinalProject/Info.plist` (`CFBundleURLTypes`) for Google Sign-In.
-4. Enable auth providers you use:
-   - Email/Password
-   - Google
-   - Apple
-5. Configure Firestore/Storage/Realtime Database.
-6. Update Realtime DB URL in `FinalProject/Services/ChatService.swift` if needed.
-
-Expected Firestore paths used by services include:
+Firestore collections/paths used across apps:
 
 - `users`
-- `orders`
-- `metadata/orderCounter`
 - `categories`
 - `products`
 - `products/{productId}/reviews`
+- `orders`
+- `metadata/orderCounter`
 - `users/{uid}/cart`
 - `users/{uid}/wishlist`
 - `users/{uid}/payments`
 - `users/{uid}/shippingAddresses`
 - `users/{uid}/notifications`
+- `users/{uid}/orders`
 
-Realtime Database path for chat:
+Realtime Database path:
 
 - `messages/{uid}`
 
-## Notes
+## Run Locally
 
-- Launch screen uses storyboard (`Base.lproj/LaunchScreen.storyboard`), while app UI is otherwise code-driven.
-- The repository includes `Presentation/` assets (slide deck + generator script) for project presentation.
+### Prerequisites
 
+- macOS with Xcode installed
+- network access for Swift Package Manager dependency resolution
+- Firebase project configured for Auth + Firestore + Storage + Realtime Database
+
+### Run customer app
+
+1. Open `FinalProject/FinalProject.xcodeproj`.
+2. Select scheme `FinalProject`.
+3. Build and run.
+
+### Run admin app
+
+1. Open `DashBoardFinalProject/DashBoardFinalProject.xcodeproj`.
+2. Select scheme `DashBoardFinalProject`.
+3. Build and run.
+
+Build setting note:
+
+- `FinalProject` target is configured with iOS deployment target `16.6`.
+- `DashBoardFinalProject` currently inherits project-level deployment target `26.2` from the checked-in `.pbxproj`.
+
+### Run web dashboard prototypes
+
+Serve the repository over a local HTTP server (required for ES module imports), then open one of:
+
+- `/DashBoardFinalProject/dashboard.html`
+- `/WebsiteDashBoardFinalProject/dashboard.html`
+
+## Firebase Setup Checklist
+
+1. Replace iOS config files:
+   - `FinalProject/FinalProject/GoogleService-Info.plist`
+   - `DashBoardFinalProject/DashBoardFinalProject/GoogleService-Info.plist`
+2. Update the Google Sign-In URL scheme in `FinalProject/FinalProject/Info.plist` (`CFBundleURLTypes`) if you use your own Firebase project.
+3. Ensure Firestore and Realtime Database rules permit the required reads/writes.
+4. Confirm Realtime Database URL:
+   - `FinalProject/FinalProject/Services/ChatService.swift`
+   - `DashBoardFinalProject/DashBoardFinalProject/Services/Realtime/RealtimeChatRepository.swift`
+
+## Documentation Map
+
+- `FinalProject/README.md`
+- `FinalProject/docs/FinalProject_Architecture_Workflow_Documentation.md`
+- `DashBoardFinalProject/docs/README.md`
+- `DashBoardFinalProject/docs/ARCHITECTURE_AND_STATE_FLOW.md`
+- `DashBoardFinalProject/docs/SCREEN_ARCHITECTURE_REFERENCE.md`
+
+## Testing Status
+
+- `DashBoardFinalProject` includes an XCTest target (`DashBoardFinalProjectTests`) with focused view model tests.
+- `FinalProject` currently has no dedicated test target in this repository snapshot.
