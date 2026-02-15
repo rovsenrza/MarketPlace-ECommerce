@@ -428,6 +428,7 @@
       font-family: inherit;
       transition: border-color 0.2s, box-shadow 0.2s;
       background: var(--card);
+      color: var(--text);
     }
 
     input:focus, textarea:focus, select:focus {
@@ -438,6 +439,12 @@
 
     input::placeholder, textarea::placeholder {
       color: var(--text-muted);
+    }
+
+    select option,
+    select optgroup {
+      color: var(--text);
+      background: var(--card);
     }
 
     input:disabled {
