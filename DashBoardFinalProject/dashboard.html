@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Firebase Admin Dashboard</title>
+  <style>
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('DashBoardFinalProject/Fonts/Montserrat-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('DashBoardFinalProject/Fonts/Montserrat-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('DashBoardFinalProject/Fonts/Montserrat-SemiBold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('DashBoardFinalProject/Fonts/Montserrat-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --card: #f2f2f7;
+      --surface: #ffffff;
+      --text: #000000;
+      --text-muted: rgba(60, 60, 67, 0.6);
+      --border: rgba(60, 60, 67, 0.29);
+      --primary: #007aff;
+      --primary-alt: #5856d6;
+      --success: #34c759;
+      --success-alt: #5ac8fa;
+      --warning: #ff9500;
+      --warning-alt: #ffcc00;
+      --accent: #af52de;
+      --accent-alt: #ff2d55;
+      --status-delivered-text: #34c759;
+      --status-delivered-bg: rgba(52, 199, 89, 0.16);
+      --status-intransit-text: #ff9500;
+      --status-intransit-bg: rgba(255, 149, 0, 0.18);
+      --shadow: 0 6px 18px rgba(0,0,0,0.12);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.16);
+      --radius: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --card: #1c1c1e;
+        --surface: #2c2c2e;
+        --text: #ffffff;
+        --text-muted: rgba(235, 235, 245, 0.6);
+        --border: rgba(84, 84, 88, 0.65);
+        --primary: #0a84ff;
+        --primary-alt: #5e5ce6;
+        --success: #30d158;
+        --success-alt: #64d2ff;
+        --warning: #ff9f0a;
+        --warning-alt: #ffd60a;
+        --accent: #bf5af2;
+        --accent-alt: #ff375f;
+        --status-delivered-text: #30d158;
+        --status-delivered-bg: rgba(48, 209, 88, 0.16);
+        --status-intransit-text: #ff9f0a;
+        --status-intransit-bg: rgba(255, 159, 10, 0.18);
+        --shadow: 0 6px 18px rgba(0,0,0,0.35);
+        --shadow-lg: 0 12px 28px rgba(0,0,0,0.45);
+      }
+    }
+
+    body {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .header-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .header-icon svg {
+      width: 28px;
+      height: 28px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .stat-card-button {
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font: inherit;
+      color: inherit;
+      appearance: none;
+      width: 100%;
+    }
+
+    .stat-card-button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card-button:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon.primary { background: linear-gradient(135deg, var(--primary), var(--primary-alt)); }
+    .stat-icon.success { background: linear-gradient(135deg, var(--success), var(--success-alt)); }
+    .stat-icon.warning { background: linear-gradient(135deg, var(--warning), var(--warning-alt)); }
+    .stat-icon.accent { background: linear-gradient(135deg, var(--accent), var(--accent-alt)); }
+
+    .stat-icon svg {
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-header-icon.primary { background: linear-gradient(135deg, var(--primary), var(--accent)); }
+    .card-header-icon.success { background: linear-gradient(135deg, var(--success), var(--success-alt)); }
+
+    .card-header-icon svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    .card-header h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .card-header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0 2rem;
+      background: var(--card);
+      padding: 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* List Overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 1000;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .list-sheet {
+      width: min(720px, 100%);
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      max-height: 80vh;
+      overflow: auto;
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .list-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 0.6rem;
+    }
+
+    .list-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .list-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .list-body {
+      flex: 1;
+    }
+
+    .list-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .list-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .list-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .list-meta .status-pill {
+      margin-left: 0.5rem;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    label span {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--card);
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    input:disabled {
+      color: var(--text-muted);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), var(--success-alt));
+      color: white;
+    }
+
+    .btn-success:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning), var(--warning-alt));
+      color: white;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    /* Section Boxes */
+    .section-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .section-title svg {
+      width: 16px;
+      height: 16px;
+      color: var(--accent);
+    }
+
+    .section-title span {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Inline Forms */
+    .inline-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .inline-form input, .inline-form textarea {
+      flex: 1;
+    }
+
+    /* Preview Items */
+    .preview-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .preview-item-content {
+      font-size: 0.875rem;
+    }
+
+    .preview-item-content strong {
+      color: var(--text);
+    }
+
+    .preview-item-content span {
+      color: var(--text-muted);
+    }
+
+    .btn-remove {
+      background: none;
+      border: none;
+      padding: 0.25rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .btn-remove:hover {
+      color: #ef4444;
+    }
+
+    /* Category Badges */
+    .category-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      min-height: 60px;
+      padding: 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .category-badge:hover {
+      border-color: var(--primary);
+      background: rgba(0, 122, 255, 0.08);
+    }
+
+    .category-badge.selected {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border-color: transparent;
+    }
+
+    /* Price Grid */
+    .price-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* Stars */
+    .stars {
+      display: inline-flex;
+      gap: 2px;
+    }
+
+    .stars svg {
+      width: 12px;
+      height: 12px;
+      fill: var(--warning);
+      color: var(--warning);
+    }
+
+    /* Review Preview */
+    .review-preview {
+      margin-top: 0.5rem;
+    }
+
+    .review-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .review-user {
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .review-message {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Empty State */
+    .empty-text {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Label Icon */
+    .label-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .label-icon svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+    }
+
+    .label-icon svg.success {
+      color: var(--success);
+    }
+
+    /* Orders Table */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .table th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-pill.on_delivery {
+      background: var(--status-intransit-bg);
+      color: var(--status-intransit-text);
+    }
+
+    .status-pill.delivered {
+      background: var(--status-delivered-bg);
+      color: var(--status-delivered-text);
+    }
+
+    /* Messages */
+    .messages-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1rem;
+      min-height: 560px;
+    }
+
+    .chat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 560px;
+      overflow: auto;
+      padding-right: 0.25rem;
+    }
+
+    .chat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 0.75rem;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .chat-item.active {
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.15), rgba(175, 82, 222, 0.15));
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    .chat-item:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .chat-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .chat-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .chat-thread {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      height: 560px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .chat-thread-header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .chat-thread-body {
+      flex: 1;
+      overflow: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      background: var(--bg);
+    }
+
+    .message-row {
+      display: flex;
+    }
+
+    .message-row.outgoing {
+      justify-content: flex-end;
+    }
+
+    .message-bubble {
+      max-width: 100%;
+      padding: 0.7rem 0.9rem;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .message-bubble.incoming {
+      background: var(--card);
+      color: var(--text);
+      border-bottom-left-radius: 6px;
+    }
+
+    .message-bubble.outgoing {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border-bottom-right-radius: 6px;
+    }
+
+    .message-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .chat-thread-footer {
+      padding: 0.75rem;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.65rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 640px) {
+      .tabs {
+        flex-direction: column;
+        gap: 0.4rem;
+        padding: 0.6rem;
+        border-radius: 16px;
+      }
+
+      .tab-btn {
+        width: 100%;
+        text-align: left;
+        padding: 0.7rem 1rem;
+      }
+
+      .section-box {
+        padding: 0.75rem;
+      }
+
+      .table {
+        display: block;
+        width: 100%;
+      }
+
+      .table thead {
+        display: none;
+      }
+
+      .table tbody,
+      .table tr {
+        display: block;
+        width: 100%;
+      }
+
+      .table tr {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--card);
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        box-shadow: var(--shadow);
+      }
+
+      .table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border: none;
+        font-size: 0.85rem;
+      }
+
+      .table td::before {
+        content: attr(data-label);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      .order-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .order-actions select {
+        width: 100%;
+      }
+
+      .messages-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chat-thread {
+        height: 520px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+        </svg>
+      </div>
+      <div>
+        <h1>Firebase Admin</h1>
+        <p>Manage your products and categories</p>
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Dashboard tabs">
+      <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-catalog" id="tabBtnCatalog" onclick="switchTab('catalog')">Catalog</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-orders" id="tabBtnOrders" onclick="switchTab('orders')">Orders Status</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-messages" id="tabBtnMessages" onclick="switchTab('messages')">Messages</button>
+    </div>
+
+    <!-- Stats Grid -->
+    <section id="tab-catalog" class="tab-panel active">
+      <div class="stats-grid">
+      <button class="stat-card stat-card-button" type="button" onclick="openList('categories')">
+        <div class="stat-icon primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value" id="categoryCount">0</div>
+          <div class="stat-label">Categories</div>
+        </div>
+      </button>
+      <button class="stat-card stat-card-button" type="button" onclick="openList('products')">
+        <div class="stat-icon success">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value" id="productCount">0</div>
+          <div class="stat-label">Products</div>
+        </div>
+      </button>
+      <div class="stat-card">
+        <div class="stat-icon warning">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value">$0</div>
+          <div class="stat-label">Revenue</div>
+        </div>
+      </div>
+      <button class="stat-card stat-card-button" type="button" onclick="openList('orders')">
+        <div class="stat-icon accent">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value" id="orderCount">0</div>
+          <div class="stat-label">Orders</div>
+        </div>
+      </button>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="main-grid">
+        <!-- Category Form -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon primary">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div>
+              <h2>Add Category</h2>
+              <p>Create a new product category</p>
+            </div>
+          </div>
+
+        <div class="form-group">
+          <label for="catTitle">Category Title</label>
+          <input type="text" id="catTitle" placeholder="e.g., Electronics, Clothing" oninput="generateSlug()">
+        </div>
+
+        <div class="form-group">
+          <label for="catSlug">Slug <span>(auto-generated)</span></label>
+          <input type="text" id="catSlug" placeholder="category-slug" style="background: var(--bg);" disabled>
+        </div>
+
+        <div class="form-group">
+          <label for="catIcon">SF Symbol Icon <span>(optional)</span></label>
+          <input type="text" id="catIcon" placeholder="e.g., iphone, car, tshirt">
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="addCategory()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+          Add Category
+        </button>
+        </div>
+
+        <!-- Product Form -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon success">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div>
+              <h2>Add Product</h2>
+              <p>Create a new product with variants and reviews</p>
+            </div>
+          </div>
+
+        <div class="form-group">
+          <label for="productTitle">Product Title</label>
+          <input type="text" id="productTitle" placeholder="Enter product name">
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription">Description</label>
+          <textarea id="productDescription" placeholder="Describe your product..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Categories</label>
+          <div class="category-grid" id="categoryGrid">
+            <span class="empty-text">Loading categories...</span>
+          </div>
+        </div>
+
+        <div class="price-grid">
+          <div class="form-group">
+            <label class="label-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Base Price
+            </label>
+            <input type="number" id="productPrice" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label class="label-icon">
+              <svg class="success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Discount Price
+            </label>
+            <input type="number" id="productDiscount" placeholder="Optional">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="label-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18" />
+            </svg>
+            Base Quantity
+          </label>
+          <input type="number" id="productQuantity" placeholder="e.g., 25" min="0" step="1">
+        </div>
+
+        <!-- Variants Section -->
+        <div class="section-box">
+          <div class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Product Variants <span>(optional)</span>
+          </div>
+          <div class="inline-form">
+            <input type="text" id="variantName" placeholder="Variant name (e.g., Color)">
+            <input type="text" id="variantValues" placeholder="Values (comma separated)">
+            <button class="btn btn-secondary btn-sm" onclick="addVariant()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+          <div id="variantsPreview"></div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="section-box">
+          <div class="section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: var(--warning);">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            Product Reviews <span>(optional)</span>
+          </div>
+          <div class="inline-form">
+            <input type="text" id="reviewUser" placeholder="User name">
+            <input type="number" id="reviewStars" placeholder="Stars (1-5)" min="1" max="5">
+          </div>
+          <div class="inline-form">
+            <textarea id="reviewMessage" placeholder="Review message..." rows="2"></textarea>
+            <button class="btn btn-warning btn-sm" onclick="addReview()" style="align-self: stretch;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+          <div id="reviewsPreview" class="review-preview"></div>
+        </div>
+
+        <button class="btn btn-success btn-full" onclick="addProduct()" style="padding: 1rem; font-size: 1rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+          </svg>
+          Save Product
+        </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-orders" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon warning" style="background: linear-gradient(135deg, var(--warning), var(--warning-alt));">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h18v4H3zM5 7v13h14V7" />
+            </svg>
+          </div>
+          <div>
+            <h2>Orders Status</h2>
+            <p>Set each order to delivered or on delivery</p>
+          </div>
+        </div>
+
+        <div class="section-box">
+          <div id="ordersContainer">
+            <div class="loading"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-messages" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h6m-4 8l-4-4H3a2 2 0 01-2-2V6a2 2 0 012-2h18a2 2 0 012 2v8a2 2 0 01-2 2H11l-4 4z" />
+            </svg>
+          </div>
+          <div>
+            <h2>Messages</h2>
+            <p>Chat with customers in real time</p>
+          </div>
+        </div>
+
+        <div class="messages-grid">
+          <div class="section-box">
+            <div class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              Conversations
+            </div>
+            <div id="chatList" class="chat-list">
+              <div class="loading"><div class="spinner"></div></div>
+            </div>
+          </div>
+
+          <div class="chat-thread">
+            <div class="chat-thread-header">
+              <div>
+                <div class="chat-title" id="chatHeaderTitle">Select a user</div>
+                <div class="chat-subtitle" id="chatHeaderSubtitle">Waiting for conversation</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" type="button" onclick="refreshChats()">Refresh</button>
+            </div>
+            <div class="chat-thread-body" id="chatThreadBody">
+              <div class="empty-text">Choose a conversation to start chatting.</div>
+            </div>
+            <div class="chat-thread-footer">
+              <input id="adminMessageInput" class="chat-input" type="text" placeholder="Type a message..." onkeydown="handleAdminKey(event)">
+              <button class="btn btn-primary btn-sm" type="button" onclick="sendAdminMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="listOverlay" aria-hidden="true">
+    <div class="list-sheet" role="dialog" aria-modal="true" aria-labelledby="listTitle" onclick="event.stopPropagation()">
+      <div class="list-header">
+        <h3 id="listTitle">List</h3>
+        <button class="btn-remove" type="button" onclick="closeList()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="listContent"></div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      doc,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      off,
+      push,
+      serverTimestamp as rtdbServerTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAqHHPD2A6gEjtpMJoc8ZA223mVCGZ2920",
+      authDomain: "finalproject-6d2f4.firebaseapp.com",
+      databaseURL: "https://finalproject-6d2f4-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "finalproject-6d2f4",
+      storageBucket: "finalproject-6d2f4.firebasestorage.app",
+      messagingSenderId: "365520113110",
+      appId: "1:365520113110:web:f08a4ad1ced21d6ea02877"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const rtdb = getDatabase(app);
+
+    // State
+    let variants = {};
+    let reviews = [];
+    let selectedCategories = [];
+    let categories = [];
+    let products = [];
+    let orders = [];
+    let chatUsers = [];
+    let currentChatUserId = null;
+    let currentChatUnsub = null;
+    let userProfiles = {};
+
+    // Slug Generator
+    window.generateSlug = () => {
+      const title = document.getElementById("catTitle").value;
+      document.getElementById("catSlug").value = title
+        .toLowerCase()
+        .trim()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    };
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+        background: ${type === 'success' ? 'var(--success)' : '#ef4444'};
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    const overlayEl = document.getElementById('listOverlay');
+    const listTitleEl = document.getElementById('listTitle');
+    const listContentEl = document.getElementById('listContent');
+
+    window.openList = (type) => {
+      renderList(type);
+      overlayEl.classList.add('active');
+      overlayEl.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      if (type === 'categories' && !categories.length) {
+        listContentEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        loadCategories().then(() => renderList(type));
+      }
+      if (type === 'products' && !products.length) {
+        listContentEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        loadProducts().then(() => renderList(type));
+      }
+      if (type === 'orders' && !orders.length) {
+        listContentEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        loadOrders().then(() => renderList(type));
+      }
+    };
+
+    window.closeList = () => {
+      overlayEl.classList.remove('active');
+      overlayEl.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    };
+
+    overlayEl.addEventListener('click', closeList);
+
+    function renderList(type) {
+      if (type === 'categories') {
+        listTitleEl.textContent = 'Categories';
+        listContentEl.innerHTML = renderCategoryList();
+      } else if (type === 'products') {
+        listTitleEl.textContent = 'Products';
+        listContentEl.innerHTML = renderProductList();
+      } else if (type === 'orders') {
+        listTitleEl.textContent = 'Orders';
+        listContentEl.innerHTML = renderOrdersList();
+      }
+    }
+
+    function renderCategoryList() {
+      if (!categories.length) {
+        return '<div class="empty-text">No categories available.</div>';
+      }
+
+      return categories.map(cat => {
+        const badge = (cat.icon || cat.title || 'C').slice(0, 1).toUpperCase();
+        return `
+          <div class="list-item">
+            <div class="list-icon">${badge}</div>
+            <div class="list-body">
+              <div class="list-title">${cat.title || 'Untitled'}</div>
+              <div class="list-subtitle">${cat.slug || 'No slug'}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderProductList() {
+      if (!products.length) {
+        return '<div class="empty-text">No products yet.</div>';
+      }
+
+      const lookup = Object.fromEntries(categories.map(cat => [cat.id, cat.title]));
+
+      return products.map(product => {
+        const names = (product.categoryIds || []).map(id => lookup[id]).filter(Boolean);
+        return `
+          <div class="list-item">
+            <div class="list-icon">P</div>
+            <div class="list-body">
+              <div class="list-title">${product.title || 'Untitled'}</div>
+              <div class="list-subtitle">${names.length ? names.join(', ') : 'No categories'}</div>
+            </div>
+            <div class="list-meta">$${Number(product.basePrice || 0).toFixed(2)} · Qty ${Number(product.quantity || 0)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderOrdersList() {
+      if (!orders.length) {
+        return '<div class="empty-text">No orders yet.</div>';
+      }
+
+      return orders.map(order => {
+        const status = order.status || 'on_delivery';
+        const customer = order.shippingAddress?.name || '—';
+        return `
+          <div class="list-item">
+            <div class="list-icon">#</div>
+            <div class="list-body">
+              <div class="list-title">Order #${order.orderNumber || '—'}</div>
+              <div class="list-subtitle">${customer}</div>
+            </div>
+            <div class="list-meta">
+              $${Number(order.total || 0).toFixed(2)}
+              <span class="status-pill ${status}">${formatStatus(status)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatStatus(status) {
+      if (status === 'delivered') return 'Delivered';
+      return 'On delivery';
+    }
+
+    // Add Variant
+    window.addVariant = () => {
+      const name = document.getElementById("variantName").value.trim();
+      const values = document.getElementById("variantValues").value
+        .split(",")
+        .map(v => v.trim())
+        .filter(Boolean);
+
+      if (!name || !values.length) {
+        showToast("Please fill in variant name and values", "error");
+        return;
+      }
+
+      variants[name] = values;
+      document.getElementById("variantName").value = "";
+      document.getElementById("variantValues").value = "";
+      renderVariants();
+    };
+
+    function renderVariants() {
+      const container = document.getElementById("variantsPreview");
+      container.innerHTML = Object.entries(variants).map(([name, values]) => `
+        <div class="preview-item">
+          <div class="preview-item-content">
+            <strong>${name}:</strong> <span>${values.join(", ")}</span>
+          </div>
+          <button class="btn-remove" onclick="removeVariant('${name}')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    window.removeVariant = (name) => {
+      delete variants[name];
+      renderVariants();
+    };
+
+    // Add Review
+    window.addReview = () => {
+      const user = document.getElementById("reviewUser").value.trim();
+      const stars = parseInt(document.getElementById("reviewStars").value);
+      const message = document.getElementById("reviewMessage").value.trim();
+
+      if (!user || !stars) {
+        showToast("Please fill in user name and stars", "error");
+        return;
+      }
+
+      if (stars < 1 || stars > 5) {
+        showToast("Stars must be between 1 and 5", "error");
+        return;
+      }
+
+      reviews.push({ userName: user, stars, message });
+      document.getElementById("reviewUser").value = "";
+      document.getElementById("reviewStars").value = "";
+      document.getElementById("reviewMessage").value = "";
+      renderReviews();
+    };
+
+    function renderReviews() {
+      const container = document.getElementById("reviewsPreview");
+      container.innerHTML = reviews.map((review, index) => `
+        <div class="review-item">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <div class="review-header">
+                <span class="review-user">${review.userName}</span>
+                <span class="stars">${'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'.repeat(review.stars)}</span>
+              </div>
+              ${review.message ? `<p class="review-message">${review.message}</p>` : ''}
+            </div>
+            <button class="btn-remove" onclick="removeReview(${index})">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="18" height="18">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.removeReview = (index) => {
+      reviews.splice(index, 1);
+      renderReviews();
+    };
+
+    // Toggle Category
+    window.toggleCategory = (id) => {
+      const index = selectedCategories.indexOf(id);
+      if (index > -1) {
+        selectedCategories.splice(index, 1);
+      } else {
+        selectedCategories.push(id);
+      }
+      renderCategories();
+    };
+
+    function renderCategories() {
+      const container = document.getElementById("categoryGrid");
+      if (categories.length === 0) {
+        container.innerHTML = '<span class="empty-text">No categories available. Add one first.</span>';
+        return;
+      }
+      container.innerHTML = categories.map(cat => `
+        <span class="category-badge ${selectedCategories.includes(cat.id) ? 'selected' : ''}" 
+              onclick="toggleCategory('${cat.id}')">
+          ${cat.title}
+        </span>
+      `).join('');
+    }
+
+    // Load Categories
+    async function loadCategories() {
+      const snap = await getDocs(collection(db, "categories"));
+      categories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      document.getElementById("categoryCount").textContent = categories.length;
+      renderCategories();
+    }
+
+    async function loadProducts() {
+      const snap = await getDocs(collection(db, "products"));
+      products = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const productCountEl = document.getElementById("productCount");
+      if (productCountEl) {
+        productCountEl.textContent = products.length;
+      }
+    }
+
+    async function loadUsers() {
+      const snap = await getDocs(collection(db, "users"));
+      userProfiles = {};
+      snap.docs.forEach(docSnap => {
+        const data = docSnap.data() || {};
+        userProfiles[docSnap.id] = {
+          displayName: data.displayName || "",
+          email: data.email || ""
+        };
+      });
+    }
+
+    // Add Category
+    window.addCategory = async () => {
+      const title = document.getElementById("catTitle").value.trim();
+      const slug = document.getElementById("catSlug").value.trim();
+      const icon = document.getElementById("catIcon").value.trim();
+
+      if (!title || !slug) {
+        showToast("Please fill in the title", "error");
+        return;
+      }
+
+      await addDoc(collection(db, "categories"), {
+        title,
+        slug,
+        icon,
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById("catTitle").value = "";
+      document.getElementById("catSlug").value = "";
+      document.getElementById("catIcon").value = "";
+
+      showToast("Category added successfully!");
+      loadCategories();
+    };
+
+    // Add Product
+    window.addProduct = async () => {
+      const title = document.getElementById("productTitle").value.trim();
+      const description = document.getElementById("productDescription").value.trim();
+      const basePrice = parseFloat(document.getElementById("productPrice").value);
+      const discountPrice = parseFloat(document.getElementById("productDiscount").value);
+      const quantity = parseInt(document.getElementById("productQuantity").value, 10);
+
+      if (!title || isNaN(basePrice) || selectedCategories.length === 0 || isNaN(quantity)) {
+        showToast("Please fill in title, price, quantity, and select at least one category", "error");
+        return;
+      }
+
+      const productData = {
+        title,
+        description,
+        categoryIds: selectedCategories,
+        basePrice,
+        quantity,
+        createdAt: serverTimestamp()
+      };
+
+      if (!isNaN(discountPrice)) {
+        productData.discountPrice = discountPrice;
+      }
+
+      if (Object.keys(variants).length) {
+        productData.variants = variants;
+      }
+
+      const productRef = await addDoc(collection(db, "products"), productData);
+
+      for (const review of reviews) {
+        await addDoc(collection(db, "products", productRef.id, "reviews"), {
+          ...review,
+          createdAt: serverTimestamp()
+        });
+      }
+
+      // Reset form
+      document.getElementById("productTitle").value = "";
+      document.getElementById("productDescription").value = "";
+      document.getElementById("productPrice").value = "";
+      document.getElementById("productDiscount").value = "";
+      document.getElementById("productQuantity").value = "";
+      variants = {};
+      reviews = [];
+      selectedCategories = [];
+      renderVariants();
+      renderReviews();
+      renderCategories();
+
+      showToast("Product added successfully!");
+      loadProducts();
+    };
+
+    // Initialize
+    loadCategories();
+    loadProducts();
+    loadOrders();
+
+    // Tabs
+    window.switchTab = (tab) => {
+      const tabs = ["catalog", "orders", "messages"];
+      tabs.forEach(name => {
+        const isActive = tab === name;
+        document.getElementById(`tab-${name}`).classList.toggle("active", isActive);
+        const btn = document.getElementById(`tabBtn${name.charAt(0).toUpperCase() + name.slice(1)}`);
+        if (btn) {
+          btn.classList.toggle("active", isActive);
+          btn.setAttribute("aria-selected", isActive ? "true" : "false");
+        }
+      });
+    };
+
+    // Orders
+    async function loadOrders() {
+      const snap = await getDocs(collection(db, "orders"));
+      orders = snap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+      const orderCountEl = document.getElementById("orderCount");
+      if (orderCountEl) {
+        orderCountEl.textContent = orders.length;
+      }
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const container = document.getElementById("ordersContainer");
+      if (orders.length === 0) {
+        container.innerHTML = '<div class="empty-text">No orders yet.</div>';
+        return;
+      }
+
+      container.innerHTML = `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orders.map(order => `
+              <tr>
+                <td data-label="Order #">${order.orderNumber || "—"}</td>
+                <td data-label="Customer">${order.shippingAddress?.name || "—"}</td>
+                <td data-label="Total">$${Number(order.total || 0).toFixed(2)}</td>
+                <td data-label="Status">
+                  <span class="status-pill ${order.status || "on_delivery"}">
+                    ${formatStatus(order.status || "on_delivery")}
+                  </span>
+                </td>
+                <td data-label="Update">
+                  <div class="order-actions">
+                    <select onchange="updateOrderStatus('${order.id}', this.value)">
+                      <option value="on_delivery" ${order.status === "on_delivery" ? "selected" : ""}>On delivery</option>
+                      <option value="delivered" ${order.status === "delivered" ? "selected" : ""}>Delivered</option>
+                    </select>
+                  </div>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    window.updateOrderStatus = async (orderId, status) => {
+      await updateDoc(doc(db, "orders", orderId), { status });
+      showToast("Order status updated!");
+      loadOrders();
+    };
+
+    // Messages (Realtime Database)
+    window.refreshChats = () => {
+      loadChats();
+    };
+
+    function resolveTimestamp(value) {
+      if (typeof value === "number") return value;
+      if (typeof value === "string") return Number(value) || 0;
+      return 0;
+    }
+
+    function loadChats() {
+      const listEl = document.getElementById("chatList");
+      listEl.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      const messagesRef = ref(rtdb, "messages");
+      onValue(messagesRef, snapshot => {
+        const value = snapshot.val() || {};
+        chatUsers = Object.keys(value).map(userId => {
+          const messages = Object.values(value[userId] || {});
+          const lastMessage = messages.sort((a, b) => resolveTimestamp(b.createdAt) - resolveTimestamp(a.createdAt))[0];
+          return {
+            userId,
+            lastText: lastMessage?.text || "No messages yet",
+            lastTime: resolveTimestamp(lastMessage?.createdAt)
+          };
+        }).sort((a, b) => b.lastTime - a.lastTime);
+
+        renderChatList();
+        if (!currentChatUserId && chatUsers.length) {
+          selectChat(chatUsers[0].userId);
+        } else if (!chatUsers.length) {
+          document.getElementById("chatThreadBody").innerHTML = '<div class="empty-text">No conversations yet.</div>';
+          document.getElementById("chatHeaderTitle").textContent = "Select a user";
+          document.getElementById("chatHeaderSubtitle").textContent = "Waiting for conversation";
+        }
+      });
+    }
+
+    function renderChatList() {
+      const listEl = document.getElementById("chatList");
+      if (!chatUsers.length) {
+        listEl.innerHTML = '<div class="empty-text">No conversations yet.</div>';
+        return;
+      }
+
+      listEl.innerHTML = chatUsers.map(user => `
+        <div class="chat-item ${user.userId === currentChatUserId ? "active" : ""}" onclick="selectChat('${user.userId}')">
+          <div class="chat-title">${getUserLabel(user.userId)}</div>
+          <div class="chat-subtitle">${user.lastText}</div>
+        </div>
+      `).join("");
+    }
+
+    window.selectChat = (userId) => {
+      currentChatUserId = userId;
+      renderChatList();
+      document.getElementById("chatHeaderTitle").textContent = getUserLabel(userId);
+      document.getElementById("chatHeaderSubtitle").textContent = "Active conversation";
+
+      if (currentChatUnsub) {
+        currentChatUnsub();
+        currentChatUnsub = null;
+      }
+
+      const userRef = ref(rtdb, `messages/${userId}`);
+      currentChatUnsub = onValue(userRef, snapshot => {
+        const messages = [];
+        snapshot.forEach(child => {
+          const data = child.val();
+          messages.push({
+            id: child.key,
+            text: data.text || "",
+            senderId: data.senderId || "",
+            senderName: data.senderName || "",
+            isFromAdmin: !!data.isFromAdmin,
+            createdAt: resolveTimestamp(data.createdAt)
+          });
+        });
+        messages.sort((a, b) => a.createdAt - b.createdAt);
+        renderChatThread(messages);
+      });
+    };
+
+    function renderChatThread(messages) {
+      const bodyEl = document.getElementById("chatThreadBody");
+      if (!messages.length) {
+        bodyEl.innerHTML = '<div class="empty-text">No messages yet.</div>';
+        return;
+      }
+
+      bodyEl.innerHTML = messages.map(message => {
+        const outgoing = message.isFromAdmin;
+        return `
+          <div class="message-row ${outgoing ? "outgoing" : ""}">
+            <div>
+              <div class="message-bubble ${outgoing ? "outgoing" : "incoming"}">
+                ${message.text}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      bodyEl.scrollTop = bodyEl.scrollHeight;
+    }
+
+    window.handleAdminKey = (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendAdminMessage();
+      }
+    };
+
+    window.sendAdminMessage = async () => {
+      const input = document.getElementById("adminMessageInput");
+      const text = input.value.trim();
+      if (!text) return;
+      if (!currentChatUserId) {
+        showToast("Select a conversation first", "error");
+        return;
+      }
+
+      try {
+        await push(ref(rtdb, `messages/${currentChatUserId}`), {
+          text,
+          senderId: "admin",
+          senderName: "Admin",
+          isFromAdmin: true,
+          createdAt: rtdbServerTimestamp()
+        });
+        input.value = "";
+      } catch (error) {
+        showToast("Failed to send message", "error");
+        console.error(error);
+      }
+    };
+
+    function getUserLabel(userId) {
+      const profile = userProfiles[userId];
+      if (profile?.displayName) return profile.displayName;
+      if (profile?.email) return profile.email;
+      return userId;
+    }
+
+    await loadUsers();
+    loadChats();
+  </script>
+
+  <style>
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</body>
+</html>

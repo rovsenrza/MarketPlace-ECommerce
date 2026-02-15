@@ -1,0 +1,7 @@
+{
+  "projectId": "cb21b6b9-b0e3-49df-8c73-ff16a7deb7ee",
+  "createdAt": 1770582897261,
+  "startupCommands": [
+    "echo 'iOS Project analyzed. Open FinalProject.xcodeproj in Xcode to build and run.'"
+  ]
+}
