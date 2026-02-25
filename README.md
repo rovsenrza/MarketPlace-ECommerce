@@ -1,85 +1,159 @@
 # MarketPlace-ECommerce
 
-Monorepo for a Firebase-backed commerce system with:
+## Layihə Haqqında
+Bu repository Firebase backend-i üzərində qurulmuş e-commerce monorepo-sudur və 3 əsas deliverable ehtiva edir:
 
-- customer iOS app (`FinalProject`)
-- admin iOS dashboard app (`DashBoardFinalProject`)
-- two web dashboard prototypes (`dashboard.html` variants)
+1. `FinalProject` - müştəri tərəf iOS tətbiqi (UIKit)
+2. `DashBoardFinalProject` - admin panel iOS tətbiqi (SwiftUI)
+3. `WebsiteDashBoardFinalProject` - web admin prototipi (tək `dashboard.html`)
 
-## Repository Analysis Snapshot (February 15, 2026)
+Texnoloji kontur:
 
-- 2 Xcode projects, 3 targets, 2 runnable iOS schemes
-- 221 Swift files total
-- `FinalProject`: 162 Swift files, 22 screen modules, 17 service implementations
-- `DashBoardFinalProject`: 58 Swift files + 1 test file
-- Shared backend contract: Firestore + Realtime Database
+- iOS: `UIKit`, `SwiftUI`, `Combine`, `SnapKit`, `Swift Concurrency`
+- Backend: `Firebase Auth`, `Firestore`, `Realtime Database`, `Storage`
+- Web prototip: `HTML/CSS/JavaScript` + Firebase Web SDK
 
-## What Is In This Repository
+Hazırkı kod baza ölçüsü:
 
-| Path | Deliverable | Stack | Purpose |
+- Ümumi Swift fayl sayı: `221`
+- `FinalProject`: `162` Swift fayl
+- `DashBoardFinalProject`: `59` Swift fayl (test daxil)
+
+## Repository Strukturu
+| Yol | Layihə tipi | Platforma/Stack | Məqsəd |
 | --- | --- | --- | --- |
-| `FinalProject/` | Customer app | UIKit, Coordinator + MVVM + Builder, Combine, SnapKit, Firebase | End-user shopping flow |
-| `DashBoardFinalProject/` | Admin dashboard app | SwiftUI, ViewModel + Repository, Combine, Firebase | Catalog/order/chat operations for admins |
-| `DashBoardFinalProject/dashboard.html` | Web dashboard prototype (v1) | Vanilla HTML/CSS/JS + Firebase Web SDK | Browser-based admin prototype |
-| `WebsiteDashBoardFinalProject/dashboard.html` | Web dashboard prototype (v2) | Vanilla HTML/CSS/JS + Firebase Web SDK | Extended prototype (adds mirrored order updates + notification write) |
+| `FinalProject/` | Customer App | iOS, UIKit, Coordinator + MVVM + Builder, Firebase | Son istifadəçi alış-veriş axını |
+| `DashBoardFinalProject/` | Admin App | iOS, SwiftUI, ViewModel + Repository, Firebase | Kataloq/sifariş/chat idarəsi |
+| `WebsiteDashBoardFinalProject/` | Web Prototype | Web, Vanilla JS + Firebase Web SDK | Brauzerdən admin əməliyyatları üçün prototip |
 
-## Feature Coverage
+Aktiv web faylı:
 
-### Customer iOS app (`FinalProject`)
+- `WebsiteDashBoardFinalProject/dashboard.html`
 
-- email/password + Google + Apple authentication
-- home feed, browse, search, filtering
-- product details with variants and reviews
-- cart, checkout, pricing summary, order placement
-- payment method and shipping address management
-- order history, order details, order success flow
-- notifications, wishlist, profile/settings
-- help center + real-time support chat
+## Layihə 1: FinalProject (Customer iOS)
+### Arxitektura
+`FinalProject` modul arxitektura ilə qurulub:
 
-### Admin iOS app (`DashBoardFinalProject`)
+- `Coordinator + MVVM + Builder + ServiceContainer`
+- `AppDelegate` Firebase konfiqurasiyasını edir
+- `SceneDelegate` `AppCoordinator` vasitəsilə app flow-u başladır
+- `AppCoordinator` istifadəçini auth və ya əsas tab flow-a yönləndirir
+- `MainTabCoordinator` route enum-ları ilə bütün əsas naviqasiyanı idarə edir
 
-- create categories and products
-- attach product variants and reviews during product creation
-- inspect orders and update status (`on_delivery` / `delivered`)
-- view conversations and respond in real time from admin chat
+### Əsas modullar
 
-### Web prototypes
+- Auth: login/register, Google Sign-In, Apple Sign-In
+- Home/Browse/Search/Filter
+- Product Details + reviews + variant seçimi
+- Cart + Checkout + Payment + Shipping
+- Orders: history/detail/success
+- Notifications
+- Profile + Settings
+- Help Center + real-time support chat
 
-- manage catalog, orders, and chat in browser
-- both prototypes target the same Firebase project shape
-- `WebsiteDashBoardFinalProject/dashboard.html` includes extra writebacks on delivery state change
+### Data qatı (service-protocol xəritəsi)
 
-## Architecture Summary
+- `AuthenticationServiceProtocol` -> `FirebaseAuthService`
+- `FirestoreServiceProtocol` -> `FirestoreService`
+- `UserServiceProtocol` -> `UserService`
+- `CatalogServiceProtocol` -> `CatalogService`
+- `CartServiceProtocol` -> `CartService`
+- `WishlistServiceProtocol` -> `WishlistService`
+- `OrdersServiceProtocol` -> `OrdersService`
+- `PaymentsServiceProtocol` -> `PaymentsService`
+- `ShippingAddressServiceProtocol` -> `ShippingAddressService`
+- `NotificationsServiceProtocol` -> `NotificationsService`
+- `ReviewServiceProtocol` -> `ReviewService`
+- `ChatServiceProtocol` -> `ChatService`
+- `FilterServiceProtocol` -> `FilterService`
 
-### `FinalProject` (customer app)
+### İstifadə olunan əsas framework-lər
 
-- app bootstrap: `AppDelegate` configures Firebase, `SceneDelegate` starts `AppCoordinator`
-- navigation: `AppCoordinator` -> `AuthCoordinator` or `MainTabCoordinator`
-- route modeling: route enums per domain (`HomeRoute`, `CheckoutRoute`, `ProfileRoute`, etc.)
-- presentation: MVVM with builder-based module assembly
-- data layer: protocol-first services via `ServiceContainer`
-
-Primary frameworks used in source:
-
-- `UIKit`, `Combine`, `SnapKit`
+- `UIKit`
+- `Combine`
+- `SnapKit`
 - `FirebaseCore`, `FirebaseAuth`, `FirebaseFirestore`, `FirebaseStorage`, `FirebaseDatabase`
-- `GoogleSignIn`, `Kingfisher`
+- `GoogleSignIn`
+- `Kingfisher`
 
-### `DashBoardFinalProject` (admin app)
+### Texniki qeydlər
 
-- app bootstrap: SwiftUI app with `@UIApplicationDelegateAdaptor`, Firebase configured in app delegate
-- composition root: `DashboardBuilder` + `ServiceContainer`
-- root state owner: `ContentView` holds `CatalogViewModel`, `OrdersViewModel`, `MessagesViewModel`
-- data layer: repository interfaces + Firestore/Realtime implementations
+- Xcode target deployment: `iOS 16.6`
+- Bundle identifier: `com.rovsenrza.FinalProject`
 
-Primary frameworks used in source:
+## Layihə 2: DashBoardFinalProject (Admin iOS)
+### Arxitektura
+Admin tətbiqi SwiftUI əsaslıdır:
 
-- `SwiftUI`, `Combine`
-- `FirebaseCore`, `FirebaseFirestore`, `FirebaseDatabase`
+- `SwiftUI + ObservableObject + @Published`
+- `ViewModel + Repository` layering
+- `DashboardBuilder` composition root rolunu oynayır
+- `ServiceContainer` repository implementasiyalarını inject edir
 
-## Firebase Data Contract
+App bootstrap:
 
-Firestore collections/paths used across apps:
+- `@UIApplicationDelegateAdaptor` ilə `AppDelegate`
+- `FirebaseApp.configure()` app başlanğıcında çağırılır
+
+### Əsas funksiyalar
+
+- Kategoriya əlavə etmə
+- Məhsul əlavə etmə (variant və review daxil)
+- Sifarişlərin statusunu dəyişmə (`on_delivery` / `delivered`)
+- Realtime admin chat (istifadəçi söhbətləri üzərindən cavablama)
+
+### State ownership (qısa)
+
+- `ContentView`:
+  - `@StateObject` ilə `CatalogViewModel`, `OrdersViewModel`, `MessagesViewModel`
+  - tab state və toast queue idarəsi
+- Child komponentlər:
+  - `@ObservedObject` və `@Binding` ilə VM state-i render edir
+
+### Repository implementasiyaları
+
+- Firestore:
+  - `FirestoreCatalogRepository`
+  - `FirestoreOrdersRepository`
+  - `FirestoreUserProfilesRepository`
+- Realtime Database:
+  - `RealtimeChatRepository`
+
+### Test mövcudluğu
+
+- Test target var: `DashBoardFinalProjectTests`
+- Mövcud testlər əsasən ViewModel davranışını yoxlayır (məs., label fallback və category toggle)
+
+### Texniki qeydlər
+
+- Bundle identifier: `com.rovsenrza.DashBoardFinalProject`
+- Layihə faylında deployment target `26.2` kimi görünür; real cihaz/simulator uyğunluğu üçün bu dəyər ayrıca yoxlanmalıdır.
+
+## Layihə 3: WebsiteDashBoardFinalProject (Web Admin Prototip)
+### Struktur
+
+- Tək fayl: `WebsiteDashBoardFinalProject/dashboard.html`
+- UI, stil və biznes məntiqi eyni faylda saxlanılır
+- Firebase konfiqurasiyası və CRUD əməliyyatları script daxilindədir
+
+### Capability-lər
+
+- Category və product yaratma
+- Product variants və reviews daxil etmə
+- Orders siyahısı və status update
+- Realtime chat və admin mesaj göndərmə
+- Statistik kartlar və list overlay-ləri
+
+### Məhdudiyyətlər
+
+- Production-ready arxitektura deyil
+- Build sistemi, modul parçalanması və formal test pipeline yoxdur
+- Daha çox demo/prototip məqsədinə uyğundur
+
+## Firebase Data Kontraktı
+Bu repo daxilində tətbiqlər eyni data modelinə yaxın kontraktla işləyir.
+
+Firestore kolleksiyaları:
 
 - `users`
 - `categories`
@@ -94,62 +168,77 @@ Firestore collections/paths used across apps:
 - `users/{uid}/notifications`
 - `users/{uid}/orders`
 
-Realtime Database path:
+Realtime Database:
 
 - `messages/{uid}`
 
-## Run Locally
+Uyğunluq qeydi:
 
-### Prerequisites
+- iOS customer app, iOS admin app və web prototip bu path-lərin üzərində sinxron işləmək üçün eyni sahə adlarına güvənir.
 
-- macOS with Xcode installed
-- network access for Swift Package Manager dependency resolution
-- Firebase project configured for Auth + Firestore + Storage + Realtime Database
+## Quraşdırma və Lokal İşə Salma
+### Tələblər
 
-### Run customer app
+- macOS
+- Xcode
+- Swift Package Manager üçün internet bağlantısı
+- Firebase layihəsi (Auth + Firestore + Storage + Realtime Database)
 
-1. Open `FinalProject/FinalProject.xcodeproj`.
-2. Select scheme `FinalProject`.
-3. Build and run.
+### FinalProject-i işə salmaq
 
-### Run admin app
+1. `FinalProject/FinalProject.xcodeproj` faylını açın.
+2. Scheme olaraq `FinalProject` seçin.
+3. Build və Run edin.
 
-1. Open `DashBoardFinalProject/DashBoardFinalProject.xcodeproj`.
-2. Select scheme `DashBoardFinalProject`.
-3. Build and run.
+### DashBoardFinalProject-i işə salmaq
 
-Build setting note:
+1. `DashBoardFinalProject/DashBoardFinalProject.xcodeproj` faylını açın.
+2. Scheme olaraq `DashBoardFinalProject` seçin.
+3. Build və Run edin.
 
-- `FinalProject` target is configured with iOS deployment target `16.6`.
-- `DashBoardFinalProject` currently inherits project-level deployment target `26.2` from the checked-in `.pbxproj`.
+### Web prototipi işə salmaq
 
-### Run web dashboard prototypes
+1. Repo kökündə lokal HTTP server başladın (ES modules üçün vacibdir):
+   - `python3 -m http.server 8080`
+2. Brauzerdə açın:
+   - `http://localhost:8080/WebsiteDashBoardFinalProject/dashboard.html`
 
-Serve the repository over a local HTTP server (required for ES module imports), then open one of:
+## Təhlükəsiz Firebase Setup Checklist
+Bu README-də həssas dəyərlər paylaşılmır. Real layihə üçün yalnız aşağıdakı yoxlamaları edin:
 
-- `/DashBoardFinalProject/dashboard.html`
-- `/WebsiteDashBoardFinalProject/dashboard.html`
-
-## Firebase Setup Checklist
-
-1. Replace iOS config files:
+1. iOS config fayllarını öz Firebase layihənizlə əvəz edin:
    - `FinalProject/FinalProject/GoogleService-Info.plist`
    - `DashBoardFinalProject/DashBoardFinalProject/GoogleService-Info.plist`
-2. Update the Google Sign-In URL scheme in `FinalProject/FinalProject/Info.plist` (`CFBundleURLTypes`) if you use your own Firebase project.
-3. Ensure Firestore and Realtime Database rules permit the required reads/writes.
-4. Confirm Realtime Database URL:
+2. `FinalProject/FinalProject/Info.plist` daxilində Google Sign-In URL scheme (`CFBundleURLTypes`) dəyərini öz layihənizə uyğunlaşdırın.
+3. Firestore və Realtime Database qaydalarının tələb olunan read/write əməliyyatlarına icazə verdiyini yoxlayın.
+4. Realtime DB URL istifadə olunan faylları yoxlayın:
    - `FinalProject/FinalProject/Services/ChatService.swift`
    - `DashBoardFinalProject/DashBoardFinalProject/Services/Realtime/RealtimeChatRepository.swift`
+5. Web prototipdə Firebase konfiqurasiyası üçün yalnız öz layihənizin dəyərlərindən istifadə edin; gizli dəyərləri public repoya yazmayın.
 
-## Documentation Map
+## Test və Keyfiyyət Statusu
+Mövcud vəziyyət:
+
+- `DashBoardFinalProject` üçün XCTest target mövcuddur.
+- `FinalProject` üçün ayrıca test target görünmür.
+
+Known gaps və risklər:
+
+- Customer app üçün avtomatlaşdırılmış test coverage artırılmalıdır.
+- Admin app deployment target dəyəri praktik iOS target strategiyası ilə yenidən yoxlanmalıdır.
+- Web prototip monolit fayl olduğuna görə maintainability riski daşıyır.
+- Shared backend kontraktında schema dəyişiklikləri bütün client-lərdə paralel yenilənməlidir.
+
+## Public API/Interface/Type Dəyişiklikləri
+
+- Kod səviyyəsində API/interface/type dəyişikliyi yoxdur.
+- Yalnız sənədləşmə yenilənib: kök `README.md` tam strukturlaşdırılıb.
+- README onboarding və texniki audit üçün vahid istinad sənədi kimi standartlaşdırılıb.
+
+## Sənədlər Xəritəsi
 
 - `FinalProject/README.md`
 - `FinalProject/docs/FinalProject_Architecture_Workflow_Documentation.md`
 - `DashBoardFinalProject/docs/README.md`
 - `DashBoardFinalProject/docs/ARCHITECTURE_AND_STATE_FLOW.md`
 - `DashBoardFinalProject/docs/SCREEN_ARCHITECTURE_REFERENCE.md`
-
-## Testing Status
-
-- `DashBoardFinalProject` includes an XCTest target (`DashBoardFinalProjectTests`) with focused view model tests.
-- `FinalProject` currently has no dedicated test target in this repository snapshot.
