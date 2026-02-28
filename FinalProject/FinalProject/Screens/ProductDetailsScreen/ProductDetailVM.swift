@@ -205,6 +205,7 @@ final class ProductDetailVM {
 
     private func setupCartErrorListener() {
         cartHandler.errorMessagePublisher
+            .dropFirst() 
             .receive(on: DispatchQueue.main)
             .sink { [weak self] message in
                 guard let message, !message.isEmpty else { return }
