@@ -567,16 +567,14 @@ final class CartVC: UIViewController {
     // MARK: - Actions
     
     @objc private func clearAllTapped() {
-        let alert = UIAlertController(
+        showConfirmationAlert(
             title: "Clear Cart",
             message: "Are you sure you want to remove all items from your cart?",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Clear All", style: .destructive) { [weak self] _ in
+            confirmTitle: "Clear All",
+            confirmStyle: .destructive
+        ) { [weak self] in
             self?.vm.clearCart()
-        })
-        present(alert, animated: true)
+        }
     }
     
     @objc private func startShoppingTapped() {

@@ -129,9 +129,9 @@ final class NotificationCell: UITableViewCell {
         timeLabel.text = relativeTime(from: notification.createdAt)
         unreadDot.isHidden = notification.isRead
 
-        let iconName = iconNameForType(notification.type)
+        let iconName = notification.iconSystemName
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        iconImageView.image = UIImage(systemName: "shippingbox", withConfiguration: config)
+        iconImageView.image = UIImage(systemName: iconName, withConfiguration: config)
 
         if notification.isRead {
             containerView.backgroundColor = UIColor(named: "Background") ?? .systemBackground
@@ -139,19 +139,6 @@ final class NotificationCell: UITableViewCell {
         } else {
             containerView.backgroundColor = (UIColor(named: "SurfaceElevated") ?? .secondarySystemBackground)
             containerView.layer.borderColor = (UIColor(named: "Divider") ?? UIColor.systemGray5).cgColor
-        }
-    }
-
-    private func iconNameForType(_ type: String) -> String {
-        switch type {
-        case "order_accepted":
-            return "local_shipping"
-        case "order_delivered":
-            return "check_circle"
-        case "order_shipped":
-            return "shippingbox"
-        default:
-            return "notifications"
         }
     }
 

@@ -22,6 +22,17 @@ final class CategoryDetailVC: UIViewController {
         return view
     }()
     
+    private let emptyStateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No products found in this category."
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = UIColor(named: "TextMuted") ?? .secondaryLabel
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.isHidden = true
+        return label
+    }()
+    
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.backgroundColor = .clear
@@ -79,7 +90,7 @@ final class CategoryDetailVC: UIViewController {
     }
 
     func addSubviews() {
-        [searchBar, loadingView, collectionView].forEach { view.addSubview($0) }
+        [searchBar, loadingView, collectionView, emptyStateLabel].forEach { view.addSubview($0) }
     }
 
     func setupConstraints() {
@@ -97,6 +108,12 @@ final class CategoryDetailVC: UIViewController {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(8)
             make.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        emptyStateLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalTo(collectionView)
+            make.leading.trailing.equalToSuperview().inset(32)
         }
     }
     
@@ -203,6 +220,7 @@ final class CategoryDetailVC: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.applySnapshot()
+                self?.updateEmptyStateVisibility()
             }
             .store(in: &cancellables)
         
@@ -214,6 +232,7 @@ final class CategoryDetailVC: UIViewController {
                 self.loadingView.setLoading(isLoading)
                 self.searchBar.isHidden = isLoading
                 self.collectionView.isHidden = isLoading
+                self.emptyStateLabel.isHidden = true
             }
             .store(in: &cancellables)
         
@@ -245,6 +264,11 @@ final class CategoryDetailVC: UIViewController {
 
     func applyFilterQuery(_ query: FilterQuery) {
         vm.applyFilterQuery(query)
+    }
+    
+    private func updateEmptyStateVisibility() {
+        let isEmpty = vm.filteredProducts.isEmpty && !vm.isLoading
+        emptyStateLabel.isHidden = !isEmpty
     }
 }
 

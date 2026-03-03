@@ -26,6 +26,7 @@ final class CatalogService: CatalogServiceProtocol {
 
         for document in snapshot.documents {
             var product = try document.data(as: Product.self)
+            product.id = document.documentID
 
             if let productId = product.id {
                 do {

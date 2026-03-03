@@ -223,17 +223,12 @@ final class ReviewsVC: UIViewController {
         Task {
             do {
                 try await vm.submitReview()
-                
-                let alert = UIAlertController(title: "Success", message: "Your review has been submitted", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                present(alert, animated: true)
+                showAlert(title: "Success", message: "Your review has been submitted")
                 
                 reviewTextView.text = "Write your review here..."
                 reviewTextView.textColor = .secondaryLabel
             } catch {
-                let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                present(alert, animated: true)
+                showAlert(title: "Error", message: error.localizedDescription)
             }
         }
     }

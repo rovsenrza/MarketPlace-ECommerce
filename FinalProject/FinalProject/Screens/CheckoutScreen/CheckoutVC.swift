@@ -97,6 +97,9 @@ final class CheckoutVC: UIViewController {
 
     private let paymentChangeButton: UIButton = {
         let button = ChangeButton()
+        button.contentHorizontalAlignment = .right
+        button.setContentHuggingPriority(.required, for: .horizontal)
+        button.setContentCompressionResistancePriority(.required, for: .horizontal)
         return button
     }()
 

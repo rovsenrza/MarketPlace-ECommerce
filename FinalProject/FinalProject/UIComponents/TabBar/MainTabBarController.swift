@@ -49,7 +49,7 @@ final class MainTabBarController: UITabBarController {
         viewControllers = [
             makeVC(vc: homeRootViewController, title: "Home", image: "house.fill"),
             makeVC(vc: browseRootViewController, title: "Browse", image: "safari"),
-            makeVC(vc: cartRootViewController, title: "Cart", image: "cart"),
+            makeVC(vc: cartRootViewController, title: "cart", image: "cart"),
             makeVC(vc: wishlistRootViewController, title: "Wishlist", image: "heart"),
             makeVC(vc: profileRootViewController, title: "Profile", image: "person")
         ]

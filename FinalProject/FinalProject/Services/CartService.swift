@@ -24,7 +24,6 @@ final class CartService: CartServiceProtocol {
         )
         
         var itemsWithProducts: [CartItem] = []
-        var firstError: Error?
         
         for var cartItem in cartItems {
             do {
@@ -35,15 +34,15 @@ final class CartService: CartServiceProtocol {
                 cartItem.product = product
                 itemsWithProducts.append(cartItem)
             } catch {
-                if firstError == nil {
-                    firstError = error
+                if let invalidItemId = cartItem.id {
+                    try? await firestoreService.deleteDocument(
+                        collection: "users/\(userId)/cart",
+                        documentId: invalidItemId
+                    )
                 }
             }
         }
-        
-        if let error = firstError {
-            throw error
-        }
+
         return itemsWithProducts.sorted { ($0.addedAt ?? Date()) > ($1.addedAt ?? Date()) }
     }
     
@@ -57,7 +56,9 @@ final class CartService: CartServiceProtocol {
             documentId: cartItem.productId
         )
         
-        let existingItems = try await fetchCartItems(userId: userId)
+        let existingItems: [CartItem] = try await firestoreService.getDocuments(
+            collection: "users/\(userId)/cart"
+        )
         
         if let existingItem = existingItems.first(where: {
             $0.productId == cartItem.productId && $0.matchesVariants(cartItem.selectedVariants)
@@ -126,8 +127,8 @@ final class CartService: CartServiceProtocol {
                         .eraseToAnyPublisher()
                 }
                 
-                let publishers = cartItems.map { cartItem -> AnyPublisher<CartItem, Error> in
-                    Future<CartItem, Error> { promise in
+                let publishers = cartItems.map { cartItem -> AnyPublisher<CartItem?, Never> in
+                    Future<CartItem?, Never> { promise in
                         Task {
                             do {
                                 let product: Product = try await self.firestoreService.getDocument(
@@ -138,7 +139,13 @@ final class CartService: CartServiceProtocol {
                                 updatedItem.product = product
                                 promise(.success(updatedItem))
                             } catch {
-                                promise(.failure(error))
+                                if let invalidItemId = cartItem.id {
+                                    try? await self.firestoreService.deleteDocument(
+                                        collection: "users/\(userId)/cart",
+                                        documentId: invalidItemId
+                                    )
+                                }
+                                promise(.success(nil))
                             }
                         }
                     }
@@ -148,8 +155,11 @@ final class CartService: CartServiceProtocol {
                 return Publishers.MergeMany(publishers)
                     .collect()
                     .map { items in
-                        items.sorted { ($0.addedAt ?? Date()) > ($1.addedAt ?? Date()) }
+                        items
+                            .compactMap { $0 }
+                            .sorted { ($0.addedAt ?? Date()) > ($1.addedAt ?? Date()) }
                     }
+                    .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

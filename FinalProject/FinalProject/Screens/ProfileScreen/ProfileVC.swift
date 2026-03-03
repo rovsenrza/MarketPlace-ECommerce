@@ -487,20 +487,20 @@ final class ProfileVC: UIViewController {
     }
 
     private func removeProfilePhoto() {
-        let loadingAlert = UIAlertController(title: "Removing...", message: "Please wait", preferredStyle: .alert)
+        let loadingAlert = makeLoadingAlert(title: "Removing...", message: "Please wait")
         present(loadingAlert, animated: true)
 
         Task { @MainActor in
             do {
                 try await vm.removeProfileImage()
 
-                loadingAlert.dismiss(animated: true) {
+                dismissAlert(loadingAlert) {
                     self.profileImageView.image = UIImage(systemName: "person.circle.fill")
                     self.profileImageView.tintColor = .systemGray3
                     self.showAlert(title: "Success", message: "Profile image removed")
                 }
             } catch {
-                loadingAlert.dismiss(animated: true) {
+                dismissAlert(loadingAlert) {
                     self.showAlert(title: "Error", message: error.localizedDescription)
                 }
             }
@@ -591,14 +591,14 @@ extension ProfileVC: UIImagePickerControllerDelegate, UINavigationControllerDele
         picker.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
             
-             let loadingAlert = UIAlertController(title: "Uploading...", message: "Please wait", preferredStyle: .alert)
+            let loadingAlert = self.makeLoadingAlert(title: "Uploading...", message: "Please wait")
             self.present(loadingAlert, animated: true)
             
             Task { @MainActor in
                 do {
                     let urlString = try await self.vm.updateProfileImage(image)
                     
-                    loadingAlert.dismiss(animated: true) {
+                    self.dismissAlert(loadingAlert) {
                         if let url = URL(string: urlString) {
                             self.profileImageView.kf.setImage(
                                 with: url,
@@ -609,7 +609,7 @@ extension ProfileVC: UIImagePickerControllerDelegate, UINavigationControllerDele
                         self.showAlert(title: "Success", message: "Profile image updated successfully")
                     }
                 } catch {
-                    loadingAlert.dismiss(animated: true) {
+                    self.dismissAlert(loadingAlert) {
                         self.showAlert(title: "Error", message: error.localizedDescription)
                     }
                 }

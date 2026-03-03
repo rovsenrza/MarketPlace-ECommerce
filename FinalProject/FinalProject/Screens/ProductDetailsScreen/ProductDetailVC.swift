@@ -10,6 +10,8 @@ final class ProductDetailVC: UIViewController {
     private let onRoute: ((ProductDetailRoute) -> Void)?
     private var cancellables = Set<AnyCancellable>()
     private var currentImageIndex: Int = 0
+    private var readMoreTopConstraint: Constraint?
+    private var readMoreHeightConstraint: Constraint?
     
     // MARK: - UI Components
     
@@ -340,6 +342,11 @@ final class ProductDetailVC: UIViewController {
         setupUI()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateReadMoreVisibilityIfNeeded()
+    }
+    
     // MARK: - Setup
     
     func setupUI() {
@@ -504,8 +511,9 @@ final class ProductDetailVC: UIViewController {
         }
         
         readMoreButton.snp.makeConstraints { make in
-            make.top.equalTo(descriptionLabel.snp.bottom).offset(16)
+            readMoreTopConstraint = make.top.equalTo(descriptionLabel.snp.bottom).offset(16).constraint
             make.leading.equalToSuperview().offset(20)
+            readMoreHeightConstraint = make.height.equalTo(20).constraint
             make.bottom.equalToSuperview().offset(-20)
         }
         
@@ -679,10 +687,7 @@ final class ProductDetailVC: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 guard let self = self else { return }
-
-                let alert = UIAlertController(title: "Error", message: error, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                self.present(alert, animated: true)
+                self.showAlert(title: "Error", message: error)
                 self.vm.clearError()
             }
             .store(in: &cancellables)
@@ -780,6 +785,8 @@ final class ProductDetailVC: UIViewController {
         verifiedReviewsLabel.text = "\(vm.reviewCount) verified reviews"
         
         descriptionLabel.text = product.description
+        descriptionLabel.numberOfLines = 4
+        readMoreButton.setTitle("Read more", for: .normal)
         
         let hasDescription = !(product.description?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         descriptionSectionLabel.isHidden = !hasDescription
@@ -790,6 +797,38 @@ final class ProductDetailVC: UIViewController {
         
         favoriteButton.isSelected = vm.isInWishlist
         favoriteButton.tintColor = vm.isInWishlist ? UIColor(named: "Error") : UIColor(named: "TextMuted")
+    }
+    
+    private func updateReadMoreVisibilityIfNeeded() {
+        let shouldShowReadMore = shouldShowReadMoreButton()
+        readMoreButton.isHidden = !shouldShowReadMore
+        readMoreTopConstraint?.update(offset: shouldShowReadMore ? 16 : 0)
+        readMoreHeightConstraint?.update(offset: shouldShowReadMore ? 20 : 0)
+        
+        if !shouldShowReadMore {
+            descriptionLabel.numberOfLines = 0
+        }
+    }
+    
+    private func shouldShowReadMoreButton() -> Bool {
+        guard
+            let text = descriptionLabel.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            !text.isEmpty
+        else { return false }
+        
+        let labelWidth = descriptionLabel.bounds.width
+        guard labelWidth > 0 else { return false }
+        
+        let maxLines: CGFloat = 4
+        let maxHeight = descriptionLabel.font.lineHeight * maxLines
+        let textRect = (text as NSString).boundingRect(
+            with: CGSize(width: labelWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: descriptionLabel.font as Any],
+            context: nil
+        )
+        
+        return ceil(textRect.height) > ceil(maxHeight)
     }
     
     private func updateRatingDisplay() {
@@ -944,11 +983,18 @@ final class ProductDetailVC: UIViewController {
     }
     
     @objc private func addToCartTapped() {
-        vm.addToCart()
-        
-        let alert = UIAlertController(title: "Added to Cart", message: "\(vm.product.title) has been added to your cart", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            do {
+                try await self.vm.addToCart()
+                self.showAlert(
+                    title: "Added to Cart",
+                    message: "\(self.vm.product.title) has been added to your cart"
+                )
+            } catch {
+                // Error is already published through vm.$errorMessage and shown in one place.
+            }
+        }
     }
     
     @objc private func viewAllReviewsTapped() {

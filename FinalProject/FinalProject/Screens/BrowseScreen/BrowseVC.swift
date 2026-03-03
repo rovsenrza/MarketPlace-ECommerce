@@ -22,16 +22,6 @@ final class BrowseVC: UIViewController {
         return tableView
     }()
     
-    private let searchField: UITextField = {
-        let field = UITextField()
-        field.placeholder = "Search all categories"
-        field.font = AppTypography.body()
-        field.textColor = UIColor(named: "TextPrimary") ?? .label
-        field.returnKeyType = .search
-        field.clearButtonMode = .whileEditing
-        return field
-    }()
-    
     private let featuredSectionLabel: UILabel = {
         let label = UILabel()
         label.text = "Featured Collections"
@@ -95,6 +85,17 @@ final class BrowseVC: UIViewController {
         return button
     }()
     
+    private let emptyStateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No categories available."
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = UIColor(named: "TextMuted") ?? .secondaryLabel
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.isHidden = true
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -123,7 +124,6 @@ final class BrowseVC: UIViewController {
         
         addSubviews()
         setupConstraints()
-        setupKeyboardDismiss()
         setupHeaderFooter()
         bindViewModel()
         vm.fetchCategories()
@@ -131,41 +131,24 @@ final class BrowseVC: UIViewController {
     
     func addSubviews() {
         view.addSubview(tableView)
+        view.addSubview(emptyStateLabel)
     }
     
     func setupConstraints() {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(12)
         }
-    }
-    
-    private func setupKeyboardDismiss() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
+        
+        emptyStateLabel.snp.makeConstraints { make in
+            make.center.equalTo(tableView)
+            make.leading.trailing.equalToSuperview().inset(32)
+        }
     }
     
     private func setupHeaderFooter() {
         let headerView = UIView()
         headerView.backgroundColor = .clear
         headerView.tag = 101
-        
-        let searchContainer: UIView = {
-            let view = UIView()
-            view.backgroundColor = UIColor(named: "Surface") ?? UIColor.systemGray6
-            view.layer.cornerRadius = 12
-            return view
-        }()
-        
-        let searchIcon: UIImageView = {
-            let iv = UIImageView(image: UIImage(systemName: "magnifyingglass"))
-            iv.tintColor = UIColor(named: "TextMuted") ?? .secondaryLabel
-            return iv
-        }()
         
         let trendingCard = makeFeaturedCard(
             title: "Trending Now",
@@ -182,33 +165,12 @@ final class BrowseVC: UIViewController {
         featuredGrid.addArrangedSubview(trendingCard)
         featuredGrid.addArrangedSubview(salesCard)
         
-        headerView.addSubview(searchContainer)
-        searchContainer.addSubview(searchIcon)
-        searchContainer.addSubview(searchField)
         headerView.addSubview(featuredSectionLabel)
         headerView.addSubview(featuredGrid)
         headerView.addSubview(categoriesSectionLabel)
         
-        searchContainer.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(8)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40)
-        }
-        
-        searchIcon.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().offset(12)
-            make.width.height.equalTo(18)
-        }
-        
-        searchField.snp.makeConstraints { make in
-            make.leading.equalTo(searchIcon.snp.trailing).offset(8)
-            make.trailing.equalToSuperview().offset(-12)
-            make.centerY.equalToSuperview()
-        }
-        
         featuredSectionLabel.snp.makeConstraints { make in
-            make.top.equalTo(searchContainer.snp.bottom).offset(16)
+            make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview().inset(16)
         }
         
@@ -360,7 +322,8 @@ final class BrowseVC: UIViewController {
     private func bindViewModel() {
         vm.$categories
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] categories in
+                self?.emptyStateLabel.isHidden = !categories.isEmpty
                 self?.tableView.reloadData()
             }
             .store(in: &cancellables)

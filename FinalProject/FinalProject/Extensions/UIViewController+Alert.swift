@@ -36,4 +36,12 @@ extension UIViewController {
         
         present(alert, animated: true)
     }
+    
+    func makeLoadingAlert(title: String, message: String) -> UIAlertController {
+        return UIAlertController(title: title, message: message, preferredStyle: .alert)
+    }
+    
+    func dismissAlert(_ alert: UIAlertController, animated: Bool = true, completion: (() -> Void)? = nil) {
+        alert.dismiss(animated: animated, completion: completion)
+    }
 }

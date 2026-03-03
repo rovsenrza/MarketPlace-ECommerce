@@ -108,20 +108,8 @@ final class NotificationDetailVC: UIViewController {
         messageLabel.text = notification.message
         timeLabel.text = formattedDate(notification.createdAt)
 
-        let iconName: String
-        switch notification.type {
-        case "order_accepted":
-            iconName = "local_shipping"
-        case "order_delivered":
-            iconName = "check_circle"
-        case "order_shipped":
-            iconName = "shippingbox"
-        default:
-            iconName = "notifications"
-        }
-
         let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .regular)
-        iconImageView.image = UIImage(systemName: iconName, withConfiguration: config)
+        iconImageView.image = UIImage(systemName: notification.iconSystemName, withConfiguration: config)
     }
 
     private func formattedDate(_ date: Date?) -> String {

@@ -147,7 +147,7 @@ final class ShippingAddressCell: UITableViewCell {
             make.leading.equalTo(nameLabel)
             make.top.equalTo(phoneLabel.snp.bottom).offset(6)
             make.trailing.equalToSuperview().offset(-16)
-            make.bottom.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-8)
         }
     }
 

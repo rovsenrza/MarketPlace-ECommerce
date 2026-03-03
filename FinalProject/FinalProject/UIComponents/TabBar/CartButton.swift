@@ -96,4 +96,5 @@ final class CartButton: UITabBar {
     func onCenterTap(_ action: @escaping () -> Void) {
         centerButton.addAction(UIAction { _ in action() }, for: .touchUpInside)
     }
+    
 }

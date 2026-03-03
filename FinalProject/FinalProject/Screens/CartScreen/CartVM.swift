@@ -66,14 +66,16 @@ final class CartVM: ObservableObject {
         }
     }
     
-    func addToCart(product: Product, quantity: Int = 1, selectedVariants: [String: String]? = nil) {
+    func addToCart(product: Product, quantity: Int = 1, selectedVariants: [String: String]? = nil) async throws {
         guard let userId = authService.currentUser?.uid else {
-            errorMessage = "User not authenticated"
-            return
+            let message = "User not authenticated"
+            errorMessage = message
+            throw NSError(domain: "CartVM", code: -1, userInfo: [NSLocalizedDescriptionKey: message])
         }
         guard let productId = product.id else {
-            errorMessage = "Product ID not found"
-            return
+            let message = "Product ID not found"
+            errorMessage = message
+            throw NSError(domain: "CartVM", code: -2, userInfo: [NSLocalizedDescriptionKey: message])
         }
         
         let cartItem = CartItem(
@@ -85,13 +87,12 @@ final class CartVM: ObservableObject {
             addedAt: Date()
         )
         
-        Task {
-            do {
-                _ = try await cartService.addToCart(userId: userId, cartItem: cartItem)
-                errorMessage = nil
-            } catch {
-                errorMessage = error.localizedDescription
-            }
+        do {
+            _ = try await cartService.addToCart(userId: userId, cartItem: cartItem)
+            errorMessage = nil
+        } catch {
+            errorMessage = error.localizedDescription
+            throw error
         }
     }
     

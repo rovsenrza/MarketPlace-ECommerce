@@ -17,7 +17,7 @@ extension WishlistVM: WishlistStateStore {
 @MainActor
 protocol CartActionHandler {
     var errorMessagePublisher: AnyPublisher<String?, Never> { get }
-    func addToCart(product: Product, quantity: Int, selectedVariants: [String: String]?)
+    func addToCart(product: Product, quantity: Int, selectedVariants: [String: String]?) async throws
 }
 
 extension CartVM: CartActionHandler {
@@ -159,8 +159,8 @@ final class ProductDetailVM {
         }
     }
     
-    func addToCart() {
-        cartHandler.addToCart(
+    func addToCart() async throws {
+        try await cartHandler.addToCart(
             product: product,
             quantity: quantity,
             selectedVariants: selectedVariants.isEmpty ? nil : selectedVariants
