@@ -66,7 +66,7 @@ final class HomeVC: UIViewController {
 
     private let notificationBadgeLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 11, weight: .bold)
+        label.font = .systemFont(ofSize: 9, weight: .bold)
         label.textColor = .white
         label.textAlignment = .center
         label.isHidden = true
@@ -213,14 +213,14 @@ final class HomeVC: UIViewController {
         }
 
         notificationBadgeBackground.snp.makeConstraints { make in
-            make.top.equalTo(notificationButton.snp.top).offset(-4)
-            make.trailing.equalTo(notificationButton.snp.trailing).offset(4)
-            make.height.equalTo(18)
-            make.width.greaterThanOrEqualTo(18)
+            make.top.equalTo(notificationButton.snp.top).offset(-1)
+            make.trailing.equalTo(notificationButton.snp.trailing).offset(-1)
+            make.height.equalTo(14)
+            make.width.greaterThanOrEqualTo(14)
         }
 
         notificationBadgeLabel.snp.makeConstraints { make in
-            make.edges.equalTo(notificationBadgeBackground).inset(2)
+            make.edges.equalTo(notificationBadgeBackground).inset(1)
         }
 
         searchBar.snp.makeConstraints { make in

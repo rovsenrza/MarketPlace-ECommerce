@@ -12,6 +12,7 @@ final class ProductDetailVC: UIViewController {
     private var currentImageIndex: Int = 0
     private var readMoreTopConstraint: Constraint?
     private var readMoreHeightConstraint: Constraint?
+    private var isDescriptionExpanded = false
     
     // MARK: - UI Components
     
@@ -112,6 +113,7 @@ final class ProductDetailVC: UIViewController {
         let lbl = UILabel()
         lbl.font = .systemFont(ofSize: 14, weight: .bold)
         lbl.textColor = UIColor(named: "AccentColor")
+        lbl.textAlignment = .center
         lbl.text = "-20%"
         return lbl
     }()
@@ -196,6 +198,7 @@ final class ProductDetailVC: UIViewController {
         lbl.font = .systemFont(ofSize: 15, weight: .regular)
         lbl.textColor = .secondaryLabel
         lbl.numberOfLines = 4
+        lbl.lineBreakMode = .byTruncatingTail
         return lbl
     }()
     
@@ -302,8 +305,14 @@ final class ProductDetailVC: UIViewController {
     private let addToCartButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Add to Cart", for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+        btn.setImage(UIImage(systemName: "cart", withConfiguration: config), for: .normal)
+        btn.semanticContentAttribute = .forceLeftToRight
+        btn.contentHorizontalAlignment = .center
+        btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 8)
         btn.titleLabel?.font = .systemFont(ofSize: 18, weight: .black)
         btn.setTitleColor(.white, for: .normal)
+        btn.tintColor = .white
         btn.backgroundColor = UIColor(named: "PrimaryColorSet")
         btn.layer.cornerRadius = 16
         btn.layer.shadowColor = UIColor(named: "PrimaryColorSet")?.cgColor
@@ -311,15 +320,6 @@ final class ProductDetailVC: UIViewController {
         btn.layer.shadowOffset = CGSize(width: 0, height: 8)
         btn.layer.shadowRadius = 12
         return btn
-    }()
-    
-    private let cartIconImageView: UIImageView = {
-        let iv = UIImageView()
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
-        iv.image = UIImage(systemName: "cart", withConfiguration: config)
-        iv.tintColor = .white
-        iv.contentMode = .scaleAspectFit
-        return iv
     }()
     
     // MARK: - Initialization
@@ -371,7 +371,6 @@ final class ProductDetailVC: UIViewController {
         bottomBar.addSubview(quantityContainer)
         [decrementButton, quantityLabel, incrementButton].forEach { quantityContainer.addSubview($0) }
         bottomBar.addSubview(addToCartButton)
-        addToCartButton.addSubview(cartIconImageView)
 
         [
             imageGalleryView,
@@ -452,6 +451,7 @@ final class ProductDetailVC: UIViewController {
             make.top.equalTo(imageGalleryView.snp.bottom).offset(24)
             make.trailing.equalToSuperview().offset(-16)
             make.height.equalTo(36)
+            make.width.equalTo(64)
         }
         
         discountLabel.snp.makeConstraints { make in
@@ -595,12 +595,6 @@ final class ProductDetailVC: UIViewController {
             make.trailing.equalToSuperview().offset(-16)
             make.top.equalToSuperview().offset(16)
             make.height.equalTo(56)
-        }
-        
-        cartIconImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(24)
         }
     }
     
@@ -785,6 +779,7 @@ final class ProductDetailVC: UIViewController {
         verifiedReviewsLabel.text = "\(vm.reviewCount) verified reviews"
         
         descriptionLabel.text = product.description
+        isDescriptionExpanded = false
         descriptionLabel.numberOfLines = 4
         readMoreButton.setTitle("Read more", for: .normal)
         
@@ -805,8 +800,13 @@ final class ProductDetailVC: UIViewController {
         readMoreTopConstraint?.update(offset: shouldShowReadMore ? 16 : 0)
         readMoreHeightConstraint?.update(offset: shouldShowReadMore ? 20 : 0)
         
-        if !shouldShowReadMore {
+        if shouldShowReadMore {
+            descriptionLabel.numberOfLines = isDescriptionExpanded ? 0 : 4
+            readMoreButton.setTitle(isDescriptionExpanded ? "Show less" : "Read more", for: .normal)
+        } else {
+            isDescriptionExpanded = false
             descriptionLabel.numberOfLines = 0
+            readMoreButton.setTitle("Read more", for: .normal)
         }
     }
     
@@ -816,7 +816,9 @@ final class ProductDetailVC: UIViewController {
             !text.isEmpty
         else { return false }
         
-        let labelWidth = descriptionLabel.bounds.width
+        let labelWidth = descriptionLabel.bounds.width > 0
+            ? descriptionLabel.bounds.width
+            : (descriptionContainer.bounds.width - 40)
         guard labelWidth > 0 else { return false }
         
         let maxLines: CGFloat = 4
@@ -1002,13 +1004,10 @@ final class ProductDetailVC: UIViewController {
     }
     
     @objc private func readMoreTapped() {
-        if descriptionLabel.numberOfLines == 4 {
-            descriptionLabel.numberOfLines = 0
-            readMoreButton.setTitle("Show less", for: .normal)
-        } else {
-            descriptionLabel.numberOfLines = 4
-            readMoreButton.setTitle("Read more", for: .normal)
-        }
+        isDescriptionExpanded.toggle()
+        descriptionLabel.numberOfLines = isDescriptionExpanded ? 0 : 4
+        readMoreButton.setTitle(isDescriptionExpanded ? "Show less" : "Read more", for: .normal)
+        view.setNeedsLayout()
     }
 }
 
