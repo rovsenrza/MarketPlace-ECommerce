@@ -124,3 +124,7 @@ Thumbs.db
 
 # Backup files
 *~.nib
+
+# Sensitive configuration files
+**/Info.plist
+**/GoogleService-Info.plist
